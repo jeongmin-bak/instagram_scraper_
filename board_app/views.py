@@ -21,7 +21,6 @@ def board(request):
         board = Board(author=author, keyword=keyword, content=content)
         board.save()
         json(keyword, int(content))
-        #board.save()
 
         return HttpResponseRedirect(reverse('boardapp:board'))
     else:
@@ -34,7 +33,7 @@ def detail(request, id):
         raise Http404("Does not exist!")
     return render(request, 'board_app/detail.html', {'board': board})
 
-def json(keyword, content):
+def json(keyword, number):
     header = {
         'accept': '*/*',
         'accept-encoding': 'gzip, deflate, br',
@@ -57,7 +56,7 @@ def json(keyword, content):
     dataList = []
     URL = 'https://www.instagram.com/explore/tags/{0}/?__a=1'.format(keyword)
 
-    count = math.ceil(content/30)
+    count = math.ceil(number/30)
     i = 0
     while(i < count):
         res = requests.get(URL, headers=header)
