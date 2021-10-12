@@ -87,10 +87,16 @@ def json(keyword, number):
                 data['insta_id'] = (m['user']['username'])
 
                 # profile
-                data['profile'] = (m['user']['full_name'])
+                try:
+                    data['profile'] = (m['user']['full_name'])
+                except:
+                    data['profile'] = []
 
                 # contents
-                data['contents'] = m['caption']['text']
+                try:
+                    data['contents'] = m['caption']['text']
+                except:
+                    data['contents'] = []
 
                 # like_cnt
                 data['like'] = (m['like_count'])
