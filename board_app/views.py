@@ -99,12 +99,14 @@ def json(keyword, content):
                 # comment_cnt, comments
                 try:
                     data['comments_cnt'] = (m['comment_count'])
-
                     temp = []
-                    for j in range(0, int(data['comments_cnt'])):
-                        temp.append(m['comments'][j]['text'])
-                    result = " ".join(temp)
-                    data['comments'] = result
+                    if int(data['comments_cnt']) == 0:
+                        data['comments'] = []
+                    else:
+                        for j in range(0, int(data['comments_cnt'])):
+                            temp.append(m['comments'][j]['text'])
+                        result = " ".join(temp)
+                        data['comments'] = result
 
                 except:
                     data['comments_cnt'] = 0
@@ -139,7 +141,7 @@ def export_users_xls(request,id):
     ws = wb.add_sheet('sheet1')
 
     row_num = 0
-    col_names = ['hashtag', 'Date', 'number','insta_id','profile','cotents','like','comments_cnt','comments','url']
+    col_names = ['hashtag', 'Date', 'number','insta_id','profile','contents','like','comments_cnt','comments','url']
 
     # 열이름을 첫번째 행에 추가 시켜준다.
     for idx, col_name in enumerate(col_names):
