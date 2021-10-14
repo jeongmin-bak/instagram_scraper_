@@ -10,6 +10,10 @@
             <a href="{% url 'boardapp:board' %}?next={{ request.path }}">
             <span>board</span>
             </a>
+
+            <a href="{% url 'instaidapp:id_board' %}?next={{ request.path }}">
+            <span>insta_id</span>
+            </a>
         {% endif %}
         <span>nav2</span>
         <span>nav3</span>

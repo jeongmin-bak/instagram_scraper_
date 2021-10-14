@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+<div style="border-radius: 1rem;  margin: 2rem; text-align: center">
+  <header>
+    <div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <strong>아이디 크롤링 글쓰기</strong>
+            </a>
+        </div>
+    </div>
+      <header>
+      </header>
+
+    <div class="container">
+      <form action="/instaid/write/" method="post">
+        {% csrf_token %}
+        <div class="form-group row">
+            <label for="inputTitle" class="col-sm-2 col-form-label"><strong>인스타아이디</strong></label>
+            <div class="col-sm-10">
+                <input type="text" name="insta_id" class="form-control" id="inputTitle">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputAuthor" class="col-sm-2 col-form-label"><strong>작성자</strong></label>
+            <div class="col-sm-10">
+                <input type="text" name="author" class="form-control" id="inputAuthor">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputContent" class="col-sm-2 col-form-label"><strong>크롤링 갯수</strong></label>
+            <div class="col-sm-10">
+                <input type="text" name="count" class="form-control" id="inputContent"></input>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-auto mr-auto"></div>
+            <div class="col-auto">
+                <input class="btn btn-dark rounded-pill" type="submit" role="button" value="등록">
+            </div>
+        </div>
+      </form>
+    </div>
+
+  </header>
+</div>
+{% endblock %}

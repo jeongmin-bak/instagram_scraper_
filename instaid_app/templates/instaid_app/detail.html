@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+<header>
+    <div class="navbar navbar-dark bg-dark shadow-sm mb-3">
+        <div class="container d-flex justify-content-between">
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <strong>글 조회</strong>
+            </a>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ board.keyword }}</h5>
+            <p class="card-text"><small class="text-muted">작성자 : {{ board.author }}</small></p>
+            <p class="card-text"><small class="text-muted">{{ board.created_date | date:"Y-m-d h:i" }}</small></p>
+            <p class="card-text">{{ board.count }}</p>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-auto mr-auto"></div>
+        <div class="col-auto">
+            <a class="btn btn-info" href="#" role="button">수정</a>
+        </div>
+        <div class="col-auto">
+            <form id="delete-form" action="#" method="post">
+                <input type="hidden" name="_method" value="delete"/>
+                <button id="delete-btn" type="submit" class="btn btn-danger">삭제</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

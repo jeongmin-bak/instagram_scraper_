@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'board_app',
     'main_app',
+    'instaid_app',
 ]
 
 MIDDLEWARE = [

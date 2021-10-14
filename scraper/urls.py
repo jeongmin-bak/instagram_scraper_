@@ -21,4 +21,5 @@ urlpatterns = [
     path('', include('main_app.urls')),
     path('accounts/', include('accountapp.urls')),
     path('board/', include('board_app.urls')),
+    path('instaid/', include('instaid_app.urls')),
 ]
