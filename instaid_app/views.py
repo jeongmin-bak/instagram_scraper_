@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from instaid_app.models import id_Board
+from instaid_app.models import id_Board, Instaid
 from django.urls import reverse
+from datetime import datetime
 import xlwt
 import requests
 import math
@@ -18,7 +19,7 @@ def board(request):
         cw_count = request.POST['count']
         id_board = id_Board(author=author, keyword=instaid, count=cw_count)
         id_board.save()
-        json(instaid, int(cw_count))
+        json(instaid)
 
         return HttpResponseRedirect(reverse('instaidapp:id_board'))
     else:
@@ -31,7 +32,7 @@ def detail(request, id):
         raise Http404("Does not exist!")
     return render(request, 'instaid_app/detail.html', {'board': board})
 
-def json(instaid, number):
+def json(instaid):
     header = {
         'accept': '*/*',
         'accept-encoding': 'gzip, deflate, br',
@@ -53,6 +54,7 @@ def json(instaid, number):
 
     dataList = []
     URL = 'https://www.instagram.com/{0}/?__a=1'.format(instaid)
+    print(URL)
     res = requests.get(URL, headers=header)
     res = res.json()
     res = res['graphql']['user']
@@ -62,13 +64,13 @@ def json(instaid, number):
         data = {}
 
         # 인스타 계정 id
-        data['insta_id'] = re['username']
+        data['insta_id'] = res['username']
 
         # 수집날짜
         data['crawling_date'] = datetime.now().strftime("%Y-%m-%d")
 
         # 인스타 계정 이름
-        data['profile'] = re['full_name']
+        data['profile'] = res['full_name']
 
         # 미디어타입
         data['media_type'] = video['__typename']
@@ -103,7 +105,8 @@ def json(instaid, number):
         comments_cnt = data['comments_cnt']
         like_cnt = data['like_cnt']
 
-        info = Keyword()
+        info = Instaid(insta_id=id, crawling_date=crawling_date, profile=profile, media_type=media_type, media_url=media_url, media_views=media_views, media_title=media_title, comments_cnt=comments_cnt, like_cnt=like_cnt)
+        info.save()
 
 
     for media in res['edge_owner_to_timeline_media']['edges']:
@@ -111,13 +114,13 @@ def json(instaid, number):
         m_data = {}
 
         # 인스타 계정 id
-        m_data['insta_id'] = re['username']
+        m_data['insta_id'] = res['username']
 
         # 수집날짜
         m_data['crawling_date'] = datetime.now().strftime("%Y-%m-%d")
 
         # 인스타 계정 이름
-        m_data['profile'] = re['full_name']
+        m_data['profile'] = res['full_name']
 
         # 미디어타입
         m_data['media_type'] = media['__typename']
@@ -141,5 +144,45 @@ def json(instaid, number):
         m_data['like_cnt'] = media['edge_liked_by']['count']
 
         dataList.append(m_data)
+
+        id = m_data['insta_id']
+        crawling_date = m_data['crawling_date']
+        profile = m_data['profile']
+        media_type = m_data['media_type']
+        media_url = m_data['media_url']
+        media_views = m_data['views']
+        media_title = m_data['media_title']
+        comments_cnt = m_data['comments_cnt']
+        like_cnt = m_data['like_cnt']
+
+        info = Instaid(insta_id=id, crawling_date=crawling_date, profile=profile, media_type=media_type,
+                       media_url=media_url, media_views=media_views, media_title=media_title, comments_cnt=comments_cnt,
+                       like_cnt=like_cnt)
+        info.save()
+
+def export_users_xls(request,id):
+    board = id_Board.objects.get(pk=id)
+    response = HttpResponse(content_type='application/ms-excel')
+    response["Content-Disposition"] = 'attachment;filename*=UTF-8\'\'example.xls'
+    wb = xlwt.Workbook(encoding='ansi')
+    ws = wb.add_sheet('sheet1')
+
+    row_num = 0
+    col_names = ['insta_id','crawling_date','profile','media_type','media_url','media_views','media_title','comments_cnt','like_cnt']
+
+    # 열이름을 첫번째 행에 추가 시켜준다.
+    for idx, col_name in enumerate(col_names):
+        ws.write(row_num, idx, col_name)
+
+    rows = Instaid.objects.filter(insta_id=board.keyword).values_list('insta_id','crawling_date','profile','media_type','media_url','media_views','media_title','comments_cnt','like_cnt')
+    for row in rows:
+        row_num += 1
+        for col_num, attr in enumerate(row):
+            ws.write(row_num, col_num, attr)
+
+    wb.save(response)
+
+    return response
+
 
 
