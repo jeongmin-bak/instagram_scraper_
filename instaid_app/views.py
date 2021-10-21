@@ -87,7 +87,7 @@ def data_json(instaid, number, query):
         # Use has_bext_page while loop to scrape all posts
         while count < MAX_PAGES:
             # while has_next_page: #for count in range(1, 4):
-            print('PAGE: ', count)
+            #print('PAGE: ', count)
             user_data = {}
 
             if count == 1:  # The profile page
@@ -95,7 +95,6 @@ def data_json(instaid, number, query):
             else:  # subsequent infinite scroll requests
                 profile = 'https://www.instagram.com/graphql/query/?query_hash=' + query + '&variables={"id":"' + query_id + '","first":12,"after":"' + end_cursor + '"}'
             r = s.get(profile)
-            print(profile)
             time.sleep(8)
 
             # 기존 데이터 추가
@@ -150,7 +149,6 @@ def data_json(instaid, number, query):
 
             dataList.append(user_data)
             count += 1
-        print(dataList)
 
 
 
