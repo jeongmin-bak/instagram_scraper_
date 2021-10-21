@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from instaid_app.models import id_Board, Instaid
 from django.urls import reverse
-from datetime import datetime
+import datetime
 import xlwt
-import requests
+import requests, json, re, time
 import math
 # Create your views here.
 
@@ -16,10 +16,13 @@ def board(request):
     if request.method == "POST":
         author = request.POST['author']
         instaid = request.POST['insta_id']
+        query_hash = request.POST['query']
         cw_count = request.POST['count']
-        id_board = id_Board(author=author, keyword=instaid, count=cw_count)
+
+        # 게시물 데이터베이스 저장
+        id_board = id_Board(author=author, keyword=instaid, count=cw_count, query=query_hash)
         id_board.save()
-        json(instaid)
+        data_json(instaid, int(cw_count), query_hash)
 
         return HttpResponseRedirect(reverse('instaidapp:id_board'))
     else:
@@ -32,7 +35,9 @@ def detail(request, id):
         raise Http404("Does not exist!")
     return render(request, 'instaid_app/detail.html', {'board': board})
 
-def json(instaid):
+def data_json(instaid, number, query):
+
+    # 팔로워 수, 팔로우 수, 사용자 query i 획득
     header = {
         'accept': '*/*',
         'accept-encoding': 'gzip, deflate, br',
@@ -53,112 +58,102 @@ def json(instaid):
     # header값 끝
 
     dataList = []
+
     URL = 'https://www.instagram.com/{0}/?__a=1'.format(instaid)
-    print(URL)
     res = requests.get(URL, headers=header)
     res = res.json()
-    res = res['graphql']['user']
+    #res = res['graphql']['user']
 
-    for video in res['edge_felix_video_timeline']['edges']:
-        video = video['node']
-        data = {}
+    # 사용자 팔로워 수
+    follower= res['graphql']['user']['edge_followed_by']['count']
 
-        # 인스타 계정 id
-        data['insta_id'] = res['username']
+    # 사용자 팔로잉 수
+    following = res['graphql']['user']['edge_follow']['count']
 
-        # 수집날짜
-        data['crawling_date'] = datetime.now().strftime("%Y-%m-%d")
+    # 사용자 query id
+    query_id = res['logging_page_id']
+    query_id = re.sub(r'[^0-9]', '', query_id)
 
-        # 인스타 계정 이름
-        data['profile'] = res['full_name']
+    MAX_PAGES = math.ceil(number/11)
+    # instaid / number / query
 
-        # 미디어타입
-        data['media_type'] = video['__typename']
+    has_next_page = True
 
-        # 2. display_url -> video link
-        data['media_url'] = video['display_url']
+    with requests.session() as s:
+        s.headers['user-agent'] = 'Mozilla/5.0'
+        end_cursor = ''
+        count = 0
 
-        # 3. video 조회수
-        data['views'] = video['video_view_count']
+        # Use has_bext_page while loop to scrape all posts
+        while count < MAX_PAGES:
+            # while has_next_page: #for count in range(1, 4):
+            print('PAGE: ', count)
+            user_data = {}
 
-        # 4. video title
-        try:
-            data['media_title'] = video['edge_media_to_caption']['edges'][0]['node']['text']
-        except:
-            data['media_title'] = ''
+            if count == 1:  # The profile page
+                profile = 'https://www.instagram.com/' + instaid
+            else:  # subsequent infinite scroll requests
+                profile = 'https://www.instagram.com/graphql/query/?query_hash=' + query + '&variables={"id":"' + query_id + '","first":12,"after":"' + end_cursor + '"}'
+            r = s.get(profile)
+            print(profile)
+            time.sleep(8)
 
-        # 5. video comments cnt
-        data['comments_cnt'] = video['edge_media_to_comment']['count']
+            # 기존 데이터 추가
+            user_data['crawling_date'] = datetime.datetime.now().strftime("%Y-%m-%d")
+            user_data['insta_id'] = instaid
+            user_data['follower'] = follower
+            user_data['following'] = following
 
-        # 6. video like cnt
-        data['like_cnt'] = video['edge_liked_by']['count']
+            if count == 1:  # Profile page
+                data = re.search(
+                    r'window._sharedData = (\{.+?});</script>', r.text).group(1)
+                data = json.loads(data)
 
-        dataList.append(data)
+                data_point = data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']
+            else:  # subsequent infinite scroll requests
+                data = json.loads(r.text)['data']
+                data_point = data['user']['edge_owner_to_timeline_media']
 
-        id = data['insta_id']
-        crawling_date = data['crawling_date']
-        profile = data['profile']
-        media_type = data['media_type']
-        media_url = data['media_url']
-        media_views = data['views']
-        media_title = data['media_title']
-        comments_cnt = data['comments_cnt']
-        like_cnt = data['like_cnt']
+            # Extract data and find the end cursor for the current page
+            end_cursor = data_point['page_info']['end_cursor']
+            has_next_page = data_point['page_info']['has_next_page']
 
-        info = Instaid(insta_id=id, crawling_date=crawling_date, profile=profile, media_type=media_type, media_url=media_url, media_views=media_views, media_title=media_title, comments_cnt=comments_cnt, like_cnt=like_cnt)
-        info.save()
+            # 본문 내용 시작
+            for link in data_point['edges']:
+                # 게시물 타입
+                user_data['media_type'] = link['node']['__typename']
+
+                # 게시물 링크
+                user_data['post_link'] = 'https://www.instagram.com' + '/p/' + link['node']['shortcode'] + '/'
+
+                # 게시물 작성 시간
+                post_time = link['node']['taken_at_timestamp']
+                user_data['post_date'] = datetime.datetime.fromtimestamp(post_time).strftime('%Y-%m-%d %a %H:%M')
+
+                # 본문 내용
+                try:
+                    user_data['caption'] = link['node']['edge_media_to_caption']['edges'][0]['node']['text']
+                except:
+                    user_data['caption'] = 'none'
+
+                # 좋아요 수
+                user_data['like'] = link['node']['edge_media_preview_like']['count']
+
+                try:
+                    user_data['comments_cnt'] = link['node']['edge_media_to_comment']['count']
+
+                except:
+
+                    user_data['comments_cnt'] = 0
+
+                user_data['image_link'] = link['node']['display_url']
+
+            dataList.append(user_data)
+            count += 1
+        print(dataList)
 
 
-    for media in res['edge_owner_to_timeline_media']['edges']:
-        media = media['node']
-        m_data = {}
 
-        # 인스타 계정 id
-        m_data['insta_id'] = res['username']
-
-        # 수집날짜
-        m_data['crawling_date'] = datetime.now().strftime("%Y-%m-%d")
-
-        # 인스타 계정 이름
-        m_data['profile'] = res['full_name']
-
-        # 미디어타입
-        m_data['media_type'] = media['__typename']
-
-        # 2. display_url -> media link
-        m_data['media_url'] = media['display_url']
-
-        # 3. media 조회수
-        m_data['views'] = "none"
-
-        # 4. media title
-        try:
-            m_data['media_title'] = media['edge_media_to_caption']['edges'][0]['node']['text']
-        except:
-            m_data['media_title'] = ''
-
-        # 5. media comments cnt
-        m_data['comments_cnt'] = media['edge_media_to_comment']['count']
-
-        # 6. media like cnt
-        m_data['like_cnt'] = media['edge_liked_by']['count']
-
-        dataList.append(m_data)
-
-        id = m_data['insta_id']
-        crawling_date = m_data['crawling_date']
-        profile = m_data['profile']
-        media_type = m_data['media_type']
-        media_url = m_data['media_url']
-        media_views = m_data['views']
-        media_title = m_data['media_title']
-        comments_cnt = m_data['comments_cnt']
-        like_cnt = m_data['like_cnt']
-
-        info = Instaid(insta_id=id, crawling_date=crawling_date, profile=profile, media_type=media_type,
-                       media_url=media_url, media_views=media_views, media_title=media_title, comments_cnt=comments_cnt,
-                       like_cnt=like_cnt)
-        info.save()
 
 def export_users_xls(request,id):
     board = id_Board.objects.get(pk=id)

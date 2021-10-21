@@ -8,6 +8,7 @@ class id_Board(models.Model):
     count = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(300)])
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
+    query = models.CharField(max_length=255, null=False, default=False)
 
 class Instaid(models.Model):
     insta_id = models.CharField(max_length=100, null=False)
