@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from instaid_app.models import id_Board, Instaid
+from instaid_app.models import id_Board, Instaid, instagram_data
 from django.urls import reverse
 import datetime
 import xlwt
@@ -147,27 +147,45 @@ def data_json(instaid, number, query):
 
                 user_data['image_link'] = link['node']['display_url']
 
+                crawling_date = user_data['crawling_date']
+                insta_id = user_data['insta_id']
+                user_follower = user_data['follower']
+                user_following = user_data['following']
+                media_type = user_data['media_type']
+                post_link = user_data['post_link']
+                post_date = user_data['post_date']
+                caption = user_data['caption']
+                like_cnt = user_data['like']
+                comments_cnt = user_data['comments_cnt']
+                image_link = user_data['image_link']
+
+                insta_data = instagram_data(crawling_date=crawling_date, insta_id=insta_id, follower=user_follower,
+                                            following=user_following, media_type=media_type, post_link=post_link,
+                                            post_date=post_date, caption=caption, like_cnt=like_cnt,
+                                            comments_cnt=comments_cnt, image_url=image_link)
+                insta_data.save()
+
             dataList.append(user_data)
             count += 1
 
-
+            # 데이터베이스에 저장
 
 
 def export_users_xls(request,id):
     board = id_Board.objects.get(pk=id)
     response = HttpResponse(content_type='application/ms-excel')
-    response["Content-Disposition"] = 'attachment;filename*=UTF-8\'\'example.xls'
+    response["Content-Disposition"] = "attachment;filename*=UTF-8\'\'"  + board.keyword +'.xls'
     wb = xlwt.Workbook(encoding='ansi')
     ws = wb.add_sheet('sheet1')
 
     row_num = 0
-    col_names = ['insta_id','crawling_date','profile','media_type','media_url','media_views','media_title','comments_cnt','like_cnt']
+    col_names = ['crawling_date', 'insta_id','follower','following','media_type','post_link','post_date','caption','like_cnt','comments_cnt','image_url']
 
     # 열이름을 첫번째 행에 추가 시켜준다.
     for idx, col_name in enumerate(col_names):
         ws.write(row_num, idx, col_name)
 
-    rows = Instaid.objects.filter(insta_id=board.keyword).values_list('insta_id','crawling_date','profile','media_type','media_url','media_views','media_title','comments_cnt','like_cnt')
+    rows = instagram_data.objects.filter(insta_id=board.keyword).values_list('crawling_date', 'insta_id','follower','following','media_type','post_link','post_date','caption','like_cnt','comments_cnt','image_url')
     for row in rows:
         row_num += 1
         for col_num, attr in enumerate(row):
