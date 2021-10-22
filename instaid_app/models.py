@@ -11,6 +11,7 @@ class id_Board(models.Model):
     query = models.CharField(max_length=255, null=False, default=False)
 
 class Instaid(models.Model):
+
     insta_id = models.CharField(max_length=100, null=False)
     crawling_date = models.CharField(max_length=100, null=False)
     profile = models.CharField(max_length=100, null=False)
@@ -20,4 +21,18 @@ class Instaid(models.Model):
     media_title = models.CharField(max_length=255, null=False)
     comments_cnt = models.CharField(max_length=255, null=False)
     like_cnt = models.CharField(max_length=255, null=False)
+
+class instagram_data(models.Model):
+
+    crawling_date = models.CharField(max_length=100, null=False)
+    insta_id = models.CharField(max_length=100, null=False)
+    follower = models.CharField(max_length=100, null=False)
+    following = models.CharField(max_length=100, null=False)
+    media_type = models.CharField(max_length=100, null=False)
+    post_link = models.CharField(max_length=255, null=False)
+    post_date = models.CharField(max_length=100, null=False)
+    caption = models.TextField()
+    like_cnt = models.CharField(max_length=100, null=False)
+    comments_cnt = models.CharField(max_length=100, null=False)
+    image_url = models.CharField(max_length=255, null=False)
 
