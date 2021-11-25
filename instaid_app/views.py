@@ -39,21 +39,21 @@ def data_json(instaid, number, query):
 
     # 팔로워 수, 팔로우 수, 사용자 query i 획득
     header = {
-        'accept': '*/*',
-        'accept-encoding': 'gzip, deflate, br',
-        'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-        'cookie': 'ig_did=D1DE0A39-B59A-48A7-93E9-6E772C11677F; ig_nrcb=1; mid=YSNChwALAAHcg2qvR_y07V_zsx7K; fbm_124024574287414=base_domain=.instagram.com; datr=WUE2Yad0NDCn_G1ksFtdxcM4; ds_user_id=1979016495; csrftoken=YJ9jWWyrHaJyD0vl2MWAI031Os1P1Gq3; shbid="4334\0541979016495\0541664264534:01f70ba3d18472dc38718682283cea21b8360a2697c5f16f56e35b7de4d333abcf4f3035"; shbts="1632728534\0541979016495\0541664264534:01f79d84129a2620cb11c56428f8377a729ae7603f203f7263e2242dfdee52901ad65b64"; sessionid=1979016495%3AYT01JDT2JQd2X0%3A13; rur="VLL\0541979016495\0541664422429:01f7bf8e471169f785d393aa05fb4aec13fbf6c1cdd3aed17a2572dfb3d2e2573734fbed"',
-        'referer': 'https://www.instagram.com/explore/tags/nike/',
-        'sec-ch-ua': '""Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93""',
-        'sec-ch-ua-mobile': '?0',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
-        'x-asbd-id': '198387',
-        'x-ig-app-id': '936619743392459',
-        'x-ig-www-claim': 'hmac.AR01x9G6D8yE4YzI-iMSd2isxXngO3-DG1H6IutAzy5ZbyKL',
-        'x-requested-with': 'XMLHttpRequest'
+    'accept': '*/*',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+    'cookie': 'mid=YSXU5gALAAG_urUEo7e_R9CStRxH; ig_did=87649B4F-5B8B-4006-AC5C-CA1CD74066FD; ig_nrcb=1; fbm_124024574287414=base_domain=.instagram.com; datr=pd0xYVlBmIDyHJyjQwIb0xVQ; shbid="1369\0543270410388\0541669254271:01f795819803ace75d8540469caf4a6b51fc07a6c77bf721d1aab1868e54cc2b2c6dcb61"; shbts="1637718271\0543270410388\0541669254271:01f76bb9ac8dc4de8352f0b0c01ba84fe56d925f4fad1815102afee6ede31fcef7b76082"; fbsr_124024574287414=3bHBcveh4j8qzNumAbBvCdMgcylUQbagOGWDeSrfouA.eyJ1c2VyX2lkIjoiMTAwMDA0ODM5NDIxMzA0IiwiY29kZSI6IkFRQUY0UkFrSU56U3l3bWxPSVI4TlMzckY3Nk1LdlVjQzMza1pDU0IzQ1RvXzZ6Snl2M09ZZmpNOFQzTGF0bktnWDNYQklsemgtS3Zxb1VRT3hUVjF3TC04eWZDYzJNd3VNM0MtWTJxWU14RWVPeUt6OWpzWm9CSHpZek5mbzNyUlFqMlJlV0JsM2VNTjNJNjRFVlcya2dYOExVSDJrTF9xNkpqb0dnUE5YLWtBTmdwM3FaN0ktcE84SHhIcXVtVV9vTUlGajRtSEhYTTk4YWdfMEtBTXlwdVBXT0ZBUktDYmt3YUw2bTM0ZzIxQ1ZiXzZaOUtwZFFaZmZhZDVERjNvdmZqV3VLLWVLQ0FUcm92bkM1ZXJxU29ja2dJNWJVeVFEM29NYUV6U0dUa3RXUlFwSFFYenVNQXBjczNMRzVRbmk0eXFKUjBKQUdJV2NPX080bkw2dTgzIiwib2F1dGhfdG9rZW4iOiJFQUFCd3pMaXhuallCQUhDRThLUFVMc3puU2Rzd2tTQno4N1RDNTdESG4wUlF4anJUb2JXRWNWM1hmVkJRVWU3elpBYVREYWJYd3NucHlYVGl4M0lySUZlZk9yOXg1VGVnY1Q1SVNwT2VBVGk5QTdweGNmWkMzbFdLaEVUQWpFYmpwYkxJQ2I2bjlZMm1hSTVua0dSbEVFU3o1VWEzWDRDNlBLYWpIcnVUNjN3dzhRM1NkeGRXRXJUamY0OTlvWkQiLCJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTYzNzgzMTgyNn0; fbsr_124024574287414=3bHBcveh4j8qzNumAbBvCdMgcylUQbagOGWDeSrfouA.eyJ1c2VyX2lkIjoiMTAwMDA0ODM5NDIxMzA0IiwiY29kZSI6IkFRQUY0UkFrSU56U3l3bWxPSVI4TlMzckY3Nk1LdlVjQzMza1pDU0IzQ1RvXzZ6Snl2M09ZZmpNOFQzTGF0bktnWDNYQklsemgtS3Zxb1VRT3hUVjF3TC04eWZDYzJNd3VNM0MtWTJxWU14RWVPeUt6OWpzWm9CSHpZek5mbzNyUlFqMlJlV0JsM2VNTjNJNjRFVlcya2dYOExVSDJrTF9xNkpqb0dnUE5YLWtBTmdwM3FaN0ktcE84SHhIcXVtVV9vTUlGajRtSEhYTTk4YWdfMEtBTXlwdVBXT0ZBUktDYmt3YUw2bTM0ZzIxQ1ZiXzZaOUtwZFFaZmZhZDVERjNvdmZqV3VLLWVLQ0FUcm92bkM1ZXJxU29ja2dJNWJVeVFEM29NYUV6U0dUa3RXUlFwSFFYenVNQXBjczNMRzVRbmk0eXFKUjBKQUdJV2NPX080bkw2dTgzIiwib2F1dGhfdG9rZW4iOiJFQUFCd3pMaXhuallCQUhDRThLUFVMc3puU2Rzd2tTQno4N1RDNTdESG4wUlF4anJUb2JXRWNWM1hmVkJRVWU3elpBYVREYWJYd3NucHlYVGl4M0lySUZlZk9yOXg1VGVnY1Q1SVNwT2VBVGk5QTdweGNmWkMzbFdLaEVUQWpFYmpwYkxJQ2I2bjlZMm1hSTVua0dSbEVFU3o1VWEzWDRDNlBLYWpIcnVUNjN3dzhRM1NkeGRXRXJUamY0OTlvWkQiLCJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImlzc3VlZF9hdCI6MTYzNzgzMTgyNn0; csrftoken=cy9G8yzq7or4IE9WzBCRddnleABNTrhs; ds_user_id=50700987067; sessionid=50700987067:rzZWQ2I7XgVYYR:20; rur="VLL\05450700987067\0541669368170:01f73dce05ae137d9b0623604864513062f6d853eb3490735803c3f8acd52418632c18b3"',
+    'referer': 'https://www.instagram.com/explore/tags/nike/',
+    'sec-ch-ua': '""Google Chrome";v="93", " Not;A Brand";v="99", "Chromium";v="93""',
+    'sec-ch-ua-mobile': '?0',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
+    'x-asbd-id': '198387',
+    'x-ig-app-id': '936619743392459',
+    'x-ig-www-claim': 'hmac.AR01x9G6D8yE4YzI-iMSd2isxXngO3-DG1H6IutAzy5ZbyKL',
+    'x-requested-with': 'XMLHttpRequest'
     }
     # header값 끝
 
